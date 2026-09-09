@@ -50,4 +50,4 @@ jobs:
         script: |
           docker stop chouse-user
           docker rm --force chouse-user
-          docker run  -d -p 8080:8080 --name chouse-user rafaelvlf/chouse-user:${{ github.sha }}
+          docker run  -d -p 8082:8080 --name chouse-user rafaelvlf/chouse-user:${{ github.sha }}
