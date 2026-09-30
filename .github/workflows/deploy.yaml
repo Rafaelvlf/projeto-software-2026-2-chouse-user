@@ -60,3 +60,4 @@ jobs:
             -e DATABASE_USERNAME=postgres \
             -e DATABASE_PASSWORD=postgres \
             rafaelvlf/chouse-user:${{ github.sha }}
+          docker image prune -a -f
