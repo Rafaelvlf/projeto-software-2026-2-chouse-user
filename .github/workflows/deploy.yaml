@@ -48,16 +48,19 @@ jobs:
         key: ${{ secrets.KEY_TEST }}
         port: 22
         script: |
-          docker network create chouse-net 2>/dev/null || true
-          docker stop chouse-user 2>/dev/null || true
-          docker rm --force chouse-user 2>/dev/null || true
-          docker run -d \
-            --name chouse-user \
-            --network chouse-net \
-            --restart unless-stopped \
-            -p 8082:8080 \
-            -e DATABASE_URL=jdbc:postgresql://chouse-users-db:5432/chouse_users \
-            -e DATABASE_USERNAME=postgres \
-            -e DATABASE_PASSWORD=postgres \
-            rafaelvlf/chouse-user:${{ github.sha }}
-          docker image prune -a -f
+          (
+            flock -x -w 300 200
+            docker network create chouse-net 2>/dev/null || true
+            docker stop chouse-user 2>/dev/null || true
+            docker rm --force chouse-user 2>/dev/null || true
+            docker run -d \
+              --name chouse-user \
+              --network chouse-net \
+              --restart unless-stopped \
+              -p 8082:8080 \
+              -e DATABASE_URL=jdbc:postgresql://chouse-users-db:5432/chouse_users \
+              -e DATABASE_USERNAME=postgres \
+              -e DATABASE_PASSWORD=postgres \
+              rafaelvlf/chouse-user:${{ github.sha }}
+            docker image prune -a -f
+          ) 200>/tmp/chouse-deploy.lock
